@@ -1,5 +1,6 @@
 name: Version check
 on:
+  workflow_dispatch:
   schedule:
     - cron:  '17,47 * * * *'
 
@@ -8,31 +9,27 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        branch: [release, testing, nightly, musl]
+        branch: [nightly]
     steps:
     - uses: actions/checkout@v2
       with:
         ref: ${{ matrix.branch }}
         token: ${{ secrets.PERSONAL_TOKEN }}
-    - name: Update files
-      run: |
-        bash update.sh
-      id: update_files
+    - id: latestrelease
+      name: Get Latest Release
+      uses: pozetroninc/github-action-get-latest-release@v0.5.0
+      with:
+        repository: danimart1991/Radarr
+    - name: Echo Latest Release
+      run: echo 'Latest Release is:' ${{ steps.latestrelease.outputs.release }}
+    - name: Create File
+      uses: finnp/create-file-action@1.0.0
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_ACTOR: ${{ github.actor }}
+        FILE_NAME: '.VERSION'
+        FILE_DATA: ${{ steps.latestrelease.outputs.release }}
     - name: Commit and push changes
       id: commit
-      uses: stefanzweifel/git-auto-commit-action@v4.6.0
+      uses: stefanzweifel/git-auto-commit-action@v4.9.1
       with:
-        commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
+        commit_message: ${{ format('Updated to version - {0}', steps.latestrelease.outputs.release) }}
         branch: ${{ matrix.branch }}
-    - name: Send discord notification
-      if: "contains(steps.commit.outputs.changes_detected, 'true')"
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        VERSION: ${{ steps.update_files.outputs.version }}
-        TAG: ${{ matrix.branch }}
-      run: |
-        json='{"embeds": [{"title": "'${GITHUB_REPOSITORY//docker-/}'","description": "Updated version `'${VERSION}'` detected for tag `'${TAG}'`.","color": 4886754,"footer": {"text": "Powered by GitHub Actions"},"timestamp": "'$(date -u --iso-8601=seconds)'"}]}'
-        curl -fsSL -X POST -H "Content-Type: application/json" -d "${json}" "${DISCORD_WEBHOOK}"
