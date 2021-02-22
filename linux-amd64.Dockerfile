@@ -1,4 +1,4 @@
-FROM hotio/base@sha256:065d9e475a297874726918046127c6a2bf1d4c1d72f69610724d84611846dc03
+FROM hotio/base@sha256:70a114ff6ebb2b2d0ab70a0ec91fe2d38d72adea1b60ede8477938a6bcac65fb
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
@@ -13,12 +13,13 @@ RUN apt update && \
     apt clean && \
     rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
+ARG BRANCH
 ARG VERSION
 ARG PACKAGE_VERSION=${VERSION}
 RUN mkdir "${APP_DIR}/bin" && \
-    curl -fsSL "https://github.com/danimart1991/Radarr/releases/download/${VERSION}/Radarr.${VERSION}.linux-core-x64.tar.gz" | tar xzf - -C "${APP_DIR}/bin" --strip-components=1 && \
+    curl -fsSL "https://github.com/danimart1991/Radarr/releases/download/${BRANCH}.${VERSION}/Radarr.${BRANCH}.${VERSION}.linux-core-x64.tar.gz" | tar xzf - -C "${APP_DIR}/bin" --strip-components=1 && \
     rm -rf "${APP_DIR}/bin/Radarr.Update" && \
-    echo "PackageVersion=${PACKAGE_VERSION}\nPackageAuthor=[danimart1991](https://github.com/danimart1991)\nUpdateMethod=Docker\nBranch=nightly" > "${APP_DIR}/package_info" && \
+    echo "PackageVersion=${PACKAGE_VERSION}\nPackageAuthor=[danimart1991](https://github.com/danimart1991)\nUpdateMethod=Docker\nBranch=${BRANCH}" > "${APP_DIR}/package_info" && \
     chmod -R u=rwX,go=rX "${APP_DIR}"
 
 COPY root/ /

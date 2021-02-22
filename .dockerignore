@@ -1,7 +1,6 @@
 .git
-.gitignore
 .github
 .gitattributes
-.drone.yml
+.VERSION
 README.md
 update.sh

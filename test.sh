@@ -4,7 +4,7 @@ echo "List installed packages..."
 docker run --rm --entrypoint="" "${1}" apt list --installed
 echo "Check if app works..."
 app_url="http://localhost:7878/system/status"
-docker run --rm --network host -d --name service -e DEBUG="yes" "${1}"
+docker run --network host -d --name service "${1}"
 currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
 curl -fsSL "${app_url}" > /dev/null
 status=$?
