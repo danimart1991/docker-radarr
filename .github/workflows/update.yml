@@ -29,7 +29,7 @@ jobs:
         FILE_DATA: ${{ steps.latestrelease.outputs.release }}
     - name: Commit and push changes
       id: commit
-      uses: stefanzweifel/git-auto-commit-action@v4.9.2
+      uses: stefanzweifel/git-auto-commit-action@v4.10.0
       with:
         commit_message: ${{ format('Updated to version - {0}', steps.latestrelease.outputs.release) }}
         branch: ${{ matrix.branch }}
