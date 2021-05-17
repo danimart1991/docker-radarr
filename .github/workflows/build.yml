@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Shellcheck
         run: |
@@ -33,7 +33,7 @@ jobs:
       branch: ${{ steps.prep.outputs.branch }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Check if architecture exists
         id: arch_check
@@ -136,7 +136,7 @@ jobs:
     needs: [build]
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v2.3.4
 
       - name: Login to DockerHub
         if: matrix.registry == 'docker.io'
